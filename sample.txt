@@ -1,0 +1,23 @@
+import WarehouseHeader from "@/components/WarehouseHeader";
+import WarehouseHero from "@/components/WarehouseHero";
+import WarehouseStats from "@/components/WarehouseStats";
+import InventoryTable from "@/components/InventoryTable";
+import WarehouseFooter from "@/components/WarehouseFooter";
+
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <WarehouseHeader />
+      <WarehouseHero />
+      
+      <main className="container mx-auto px-4 py-12">
+        <WarehouseStats />
+        <InventoryTable />
+      </main>
+      
+      <WarehouseFooter />
+    </div>
+  );
+};
+
+export default Index;
