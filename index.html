@@ -1,3 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Express App Code</title>
+  <style>
+    pre {
+      background: #f4f4f4;
+      border: 1px solid #ccc;
+      padding: 1em;
+      overflow-x: auto;
+      font-size: 1em;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2em;
+      background: #fff;
+      color: #222;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <h1>Express Server Code (JavaScript)</h1>
+  <pre>
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -28,3 +55,6 @@ app.get('/api/dashboard', async (req, res) => {
 app.listen(4000, () => {
   console.log('Server running on http://localhost:4000');
 });
+  </pre>
+</body>
+</html>
