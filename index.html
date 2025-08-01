@@ -2,59 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Express App Code</title>
+  <title>Supply Chain Ontology Layer - Step 1</title>
   <style>
-    pre {
-      background: #f4f4f4;
-      border: 1px solid #ccc;
-      padding: 1em;
-      overflow-x: auto;
-      font-size: 1em;
-    }
     body {
       font-family: Arial, sans-serif;
-      margin: 2em;
-      background: #fff;
-      color: #222;
+      margin: 40px;
+      background-color: #f9f9f9;
     }
     h1 {
-      color: #2c3e50;
+      color: #2d4f8e;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background-color: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      text-align: left;
+      padding: 8px;
+    }
+    th {
+      background-color: #eef1f7;
+    }
+    tr:nth-child(even) {
+      background-color: #f4f4f4;
     }
   </style>
 </head>
 <body>
-  <h1>Express Server Code (JavaScript)</h1>
-  <pre>
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const supplyChainOntology = require('./supplyChainOntology');
-const aiAgent = require('./aiAgent');
-
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-
-app.post('/api/ask', async (req, res) => {
-  const { question } = req.body;
-  // Step 1: AI Agent parses question
-  const parsed = await aiAgent.parseQuestion(question);
-  // Step 2: Ontology queried and answer assembled
-  const answer = await supplyChainOntology.answerQuestion(parsed);
-  // Step 3: Visual journey steps
-  const journey = parsed.journey;
-  res.json({ answer, journey });
-});
-
-app.get('/api/dashboard', async (req, res) => {
-  // Example: Returns summary metrics (mocked for now)
-  const dashboardData = await supplyChainOntology.getDashboardData();
-  res.json(dashboardData);
-});
-
-app.listen(4000, () => {
-  console.log('Server running on http://localhost:4000');
-});
-  </pre>
+  <h1>Supply Chain Ontology Layer — Step 1</h1>
+  <table>
+    <tr>
+      <th>Core Concept</th>
+      <th>Definition</th>
+      <th>Key Attributes</th>
+      <th>Potential Relationships</th>
+      <th>Discussion Focus</th>
+    </tr>
+    <tr>
+      <td>Product</td>
+      <td>Item being manufactured, stored, shipped, or sold</td>
+      <td>SKU, Category, Dimensions, Weight</td>
+      <td>Manufactured by, Stored at, Shipped in</td>
+      <td>Granularity, categorization, standard codes</td>
+    </tr>
+    <tr>
+      <td>Supplier</td>
+      <td>Entity that provides raw materials or products</td>
+      <td>Name, Location, Compliance Status</td>
+      <td>Supplies, Has Contract With</td>
+      <td>Supplier tiers, audit trails</td>
+    </tr>
+    <tr>
+      <td>Manufacturer</td>
+      <td>Entity transforming raw materials into finished goods</td>
+      <td>Facility ID, Production Capacity, Processes</td>
+      <td>Manufactures, Has Quality Certification</td>
+      <td>Production constraints, process standards</td>
+    </tr>
+    <tr>
+      <td>Warehouse</td>
+      <td>Facility where goods are stored</td>
+      <td>Location, Capacity, Temperature Control</td>
+      <td>Stores, Receives from, Ships to</td>
+      <td>Strategic placement, cold-chain requirements</td>
+    </tr>
+    <tr>
+      <td>Distributor</td>
+      <td>Entity that moves products across nodes</td>
+      <td>Region, Transportation Mode</td>
+      <td>Delivers to, Receives from</td>
+      <td>Delivery lead times, regional coverage</td>
+    </tr>
+    <tr>
+      <td>Shipment</td>
+      <td>Movement of goods from one location to another</td>
+      <td>Shipment ID, Carrier, ETA</td>
+      <td>Includes Product, Originates at, Destined to</td>
+      <td>Tracking, multi-modal integration</td>
+    </tr>
+    <tr>
+      <td>Customer</td>
+      <td>End recipient or business customer</td>
+      <td>ID, Demand Pattern, Location</td>
+      <td>Buys, Returns, Requests</td>
+      <td>Segmentation, demand forecasting</td>
+    </tr>
+  </table>
 </body>
 </html>
