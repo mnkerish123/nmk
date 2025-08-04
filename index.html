@@ -1,61 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Supply Chain Dashboard</title>
-  <style>
-    table { border-collapse: collapse; margin-bottom: 2em; }
-    th, td { border: 1px solid #ccc; padding: 0.5em; }
-    th { background: #f0f0f0; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Warehouse Management</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <h1>Supply Chain Dashboard</h1>
-  <div id="dashboard"></div>
-  
-  <script>
-    // Sample JSON data (you can also fetch this from an API or file)
-    const data = {
-      "Products": [
-        {"sku": "MILK1", "name": "Milk", "weight": 1.0, "volume": 1.0, "cost": 2.5, "safetyStockLevel": 50, "leadTime": 2},
-        {"sku": "BREAD1", "name": "Bread", "weight": 0.5, "volume": 0.3, "cost": 1.2, "safetyStockLevel": 30, "leadTime": 1},
-        {"sku": "EGG1", "name": "Eggs", "weight": 0.7, "volume": 0.2, "cost": 2.0, "safetyStockLevel": 20, "leadTime": 1}
-      ],
-      "Locations": [
-        {"locationID": "WH1", "type": "Warehouse", "name": "Dallas Distribution Center", "capacity": 10000, "address": "123 DC Way, Dallas, TX", "operationalHours": "24/7", "temperatureZone": "Cool"},
-        {"locationID": "STORE1", "type": "Retail Store", "name": "Walmart Supercenter #123", "capacity": 2000, "address": "456 Main St, Dallas, TX", "operationalHours": "8-22", "temperatureZone": "Ambient"}
-      ],
-      "Inventory": [
-        {"sku": "MILK1", "locationID": "WH1", "quantity": 500},
-        {"sku": "BREAD1", "locationID": "WH1", "quantity": 300},
-        {"sku": "EGG1", "locationID": "WH1", "quantity": 200},
-        {"sku": "MILK1", "locationID": "STORE1", "quantity": 120},
-        {"sku": "BREAD1", "locationID": "STORE1", "quantity": 50},
-        {"sku": "EGG1", "locationID": "STORE1", "quantity": 30}
-      ]
-    };
+<body class="min-h-screen bg-background">
+  <!-- WarehouseHeader -->
+  <header>
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="text-2xl font-bold text-primary">WarehouseLogo</div>
+      <ul class="flex space-x-6">
+        <li><a href="#" class="hover:underline">Dashboard</a></li>
+        <li><a href="#" class="hover:underline">Inventory</a></li>
+        <li><a href="#" class="hover:underline">Reports</a></li>
+        <li><a href="#" class="hover:underline">Settings</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    function renderTable(title, items) {
-      if (!items || items.length === 0) return '';
-      const headers = Object.keys(items[0]);
-      let html = `<h2>${title}</h2><table><thead><tr>`;
-      headers.forEach(h => html += `<th>${h}</th>`);
-      html += '</tr></thead><tbody>';
-      items.forEach(row => {
-        html += '<tr>';
-        headers.forEach(h => html += `<td>${row[h]}</td>`);
-        html += '</tr>';
-      });
-      html += '</tbody></table>';
-      return html;
-    }
+  <!-- WarehouseHero -->
+  <section class="bg-hero-pattern py-16 text-center text-white">
+    <h1 class="text-5xl font-extrabold mb-4">Warehouse Management</h1>
+    <p class="text-xl">Efficiently track and manage your inventory in real-time</p>
+  </section>
 
-    const dashboard = document.getElementById('dashboard');
-    dashboard.innerHTML =
-      renderTable('Products', data.Products) +
-      renderTable('Locations', data.Locations) +
-      renderTable('Inventory', data.Inventory);
+  <main class="container mx-auto px-4 py-12">
+    <!-- WarehouseStats -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+        <span class="text-3xl font-bold text-primary">1,250</span>
+        <span class="mt-2 text-gray-600">Products</span>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+        <span class="text-3xl font-bold text-primary">350</span>
+        <span class="mt-2 text-gray-600">Orders</span>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+        <span class="text-3xl font-bold text-primary">10</span>
+        <span class="mt-2 text-gray-600">Low Stock Items</span>
+      </div>
+    </section>
 
-  </script>
+    <!-- InventoryTable -->
+    <section class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-semibold mb-4">Inventory</h2>
+      <table class="min-w-full table-auto">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 text-left">Item</th>
+            <th class="px-4 py-2 text-left">SKU</th>
+            <th class="px-4 py-2 text-left">Stock</th>
+            <th class="px-4 py-2 text-left">Location</th>
+            <th class="px-4 py-2 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="border-t px-4 py-2">Widget A</td>
+            <td class="border-t px-4 py-2">WIDG-A</td>
+            <td class="border-t px-4 py-2">500</td>
+            <td class="border-t px-4 py-2">Aisle 3</td>
+            <td class="border-t px-4 py-2">
+              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700">Edit</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="border-t px-4 py-2">Gadget B</td>
+            <td class="border-t px-4 py-2">GADG-B</td>
+            <td class="border-t px-4 py-2">120</td>
+            <td class="border-t px-4 py-2">Aisle 5</td>
+            <td class="border-t px-4 py-2">
+              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700">Edit</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="border-t px-4 py-2">Component C</td>
+            <td class="border-t px-4 py-2">COMP-C</td>
+            <td class="border-t px-4 py-2">30</td>
+            <td class="border-t px-4 py-2">Aisle 1</td>
+            <td class="border-t px-4 py-2">
+              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700">Edit</button>
+            </td>
+          </tr>
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- WarehouseFooter -->
+  <footer class="bg-gray-900 text-white py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      &copy; 2025 Warehouse Management. All rights reserved.
+    </div>
+  </footer>
 </body>
 </html>
