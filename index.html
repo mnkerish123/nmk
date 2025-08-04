@@ -1,100 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Warehouse Management</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Warehouse Solutions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: #333;
+        }
+        .header {
+            background-color: #004d99;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .header nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 1rem;
+        }
+        .hero {
+            background: url('https://via.placeholder.com/1500x500') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+        }
+        .container {
+            width: 80%;
+            margin: 2rem auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #004d99;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .service-card {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-background">
-  <!-- WarehouseHeader -->
-  <header>
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="text-2xl font-bold text-primary">WarehouseLogo</div>
-      <ul class="flex space-x-6">
-        <li><a href="#" class="hover:underline">Dashboard</a></li>
-        <li><a href="#" class="hover:underline">Inventory</a></li>
-        <li><a href="#" class="hover:underline">Reports</a></li>
-        <li><a href="#" class="hover:underline">Settings</a></li>
-      </ul>
-    </nav>
-  </header>
+<body>
 
-  <!-- WarehouseHero -->
-  <section class="bg-hero-pattern py-16 text-center text-white">
-    <h1 class="text-5xl font-extrabold mb-4">Warehouse Management</h1>
-    <p class="text-xl">Efficiently track and manage your inventory in real-time</p>
-  </section>
+    <header class="header">
+        <div class="logo">Your Warehouse</div>
+        <nav>
+            <a href="#services">Services</a>
+            <a href="#about">About Us</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
 
-  <main class="container mx-auto px-4 py-12">
-    <!-- WarehouseStats -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
-        <span class="text-3xl font-bold text-primary">1,250</span>
-        <span class="mt-2 text-gray-600">Products</span>
-      </div>
-      <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
-        <span class="text-3xl font-bold text-primary">350</span>
-        <span class="mt-2 text-gray-600">Orders</span>
-      </div>
-      <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
-        <span class="text-3xl font-bold text-primary">10</span>
-        <span class="mt-2 text-gray-600">Low Stock Items</span>
-      </div>
-    </section>
+    <main>
+        <section class="hero">
+            <h1>Efficient Storage & Logistics Solutions</h1>
+            <p>Your trusted partner for all warehousing needs.</p>
+        </section>
 
-    <!-- InventoryTable -->
-    <section class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-2xl font-semibold mb-4">Inventory</h2>
-      <table class="min-w-full table-auto">
-        <thead>
-          <tr>
-            <th class="px-4 py-2 text-left">Item</th>
-            <th class="px-4 py-2 text-left">SKU</th>
-            <th class="px-4 py-2 text-left">Stock</th>
-            <th class="px-4 py-2 text-left">Location</th>
-            <th class="px-4 py-2 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="border-t px-4 py-2">Widget A</td>
-            <td class="border-t px-4 py-2">WIDG-A</td>
-            <td class="border-t px-4 py-2">500</td>
-            <td class="border-t px-4 py-2">Aisle 3</td>
-            <td class="border-t px-4 py-2">
-              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700">Edit</button>
-            </td>
-          </tr>
-          <tr>
-            <td class="border-t px-4 py-2">Gadget B</td>
-            <td class="border-t px-4 py-2">GADG-B</td>
-            <td class="border-t px-4 py-2">120</td>
-            <td class="border-t px-4 py-2">Aisle 5</td>
-            <td class="border-t px-4 py-2">
-              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700">Edit</button>
-            </td>
-          </tr>
-          <tr>
-            <td class="border-t px-4 py-2">Component C</td>
-            <td class="border-t px-4 py-2">COMP-C</td>
-            <td class="border-t px-4 py-2">30</td>
-            <td class="border-t px-4 py-2">Aisle 1</td>
-            <td class="border-t px-4 py-2">
-              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700">Edit</button>
-            </td>
-          </tr>
-          <!-- Add more rows as needed -->
-        </tbody>
-      </table>
-    </section>
-  </main>
+        <div class="container">
+            <section id="services" class="section">
+                <h2>Our Services</h2>
+                <p>We provide a comprehensive range of solutions to optimize your supply chain.</p>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h3>Inventory Management</h3>
+                        <p>Advanced systems to track and manage your stock with precision.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Fulfillment Services</h3>
+                        <p>Fast and accurate picking, packing, and shipping to your customers.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Secure Storage</h3>
+                        <p>State-of-the-art facilities ensuring the safety of your goods.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Logistics & Distribution</h3>
+                        <p>Efficient transportation and delivery to get your products where they need to be.</p>
+                    </div>
+                </div>
+            </section>
 
-  <!-- WarehouseFooter -->
-  <footer class="bg-gray-900 text-white py-6 mt-12">
-    <div class="container mx-auto px-4 text-center">
-      &copy; 2025 Warehouse Management. All rights reserved.
-    </div>
-  </footer>
+            <section id="about" class="section">
+                <h2>About Us</h2>
+                <p>For over 20 years, we have been a leader in the warehousing industry, committed to excellence and customer satisfaction. Our team of experts is dedicated to providing tailored solutions that meet your unique business needs.</p>
+            </section>
+
+            <section id="contact" class="section">
+                <h2>Contact Us</h2>
+                <p>Ready to streamline your logistics? Get in touch with us today.</p>
+                <p>Email: info@yourwarehouse.com | Phone: (123) 456-7890</p>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Your Warehouse Solutions. All Rights Reserved.</p>
+    </footer>
+
 </body>
 </html>
