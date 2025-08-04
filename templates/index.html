@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain Management System - Walmart Scale</title>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            padding: 120px 2rem 2rem;
+            min-height: 100vh;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .network-visualization {
+            height: 500px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .chat-container {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+
+        .agent-message {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .agent-type {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .chat-input button {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .agent-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .agent-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #667eea;
+            background: transparent;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .agent-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .thinking-visualization {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .thinking-step {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-header {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f);
+            transition: width 0.5s ease;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover, .control-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
+            
+            .right-panel {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 100px 1rem 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏪 Supply Chain Management System</h1>
+        <p>Walmart-Scale Network Visualization & AI-Powered Analytics</p>
+    </div>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <!-- Network Visualization -->
+            <div class="card">
+                <h2>🌐 Supply Chain Network</h2>
+                <div class="controls">
+                    <button class="control-btn active" onclick="showView('network')">Network View</button>
+                    <button class="control-btn" onclick="showView('inventory')">Inventory Heatmap</button>
+                    <button class="control-btn" onclick="showView('flow')">Flow Analysis</button>
+                </div>
+                <div class="network-visualization" id="networkViz">
+                    <div class="loading" id="networkLoading">
+                        <p>Loading supply chain network...</p>
+                    </div>
+                </div>
+                <div class="legend" id="networkLegend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff6b6b;"></div>
+                        <span>Retail Stores</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4ecdc4;"></div>
+                        <span>Distribution Centers</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #45b7d1;"></div>
+                        <span>Warehouses</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f9ca24;"></div>
+                        <span>Factories</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #6c5ce7;"></div>
+                        <span>Ports</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Dashboard -->
+            <div class="card">
+                <h2>📊 Key Performance Indicators</h2>
+                <div class="metrics-grid" id="metricsGrid">
+                    <!-- Metrics will be populated by JavaScript -->
+                </div>
+                <canvas id="performanceChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <!-- AI Chat Interface -->
+            <div class="card">
+                <h2>🤖 AI Supply Chain Assistant</h2>
+                <div class="agent-selector">
+                    <button class="agent-btn active" data-agent="simple_reflex">Simple Reflex</button>
+                    <button class="agent-btn" data-agent="model_based_reflex">Model-Based</button>
+                    <button class="agent-btn" data-agent="goal_based">Goal-Based</button>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message agent-message">
+                            <div class="agent-type">Simple Reflex Agent</div>
+                            <div>Hello! I'm your AI supply chain assistant. I can help you with:</div>
+                            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                                <li>Inventory levels and stock analysis</li>
+                                <li>Location and capacity information</li>
+                                <li>Order status and delivery performance</li>
+                                <li>Supplier and performance metrics</li>
+                            </ul>
+                            <div style="margin-top: 0.5rem; font-style: italic;">
+                                Try asking: "How many items are in Walmart Supercenter #1?"
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask about your supply chain..." onkeypress="handleKeyPress(event)">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Thinking Visualization -->
+            <div class="card">
+                <h2>🧠 Agent Reasoning Process</h2>
+                <div class="thinking-visualization" id="thinkingViz">
+                    <p style="text-align: center; color: #666; padding: 2rem;">
+                        Agent thinking steps will appear here when processing queries...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentAgent = 'simple_reflex';
+        let supplyChainData = null;
+        let networkSvg = null;
+        let currentView = 'network';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            console.log('Initializing Supply Chain Management System...');
+            
+            // Show loading
+            document.getElementById('networkLoading').classList.add('show');
+            
+            // Generate sample data
+            await generateSampleData();
+            
+            // Initialize visualizations
+            initializeNetworkVisualization();
+            initializeMetrics();
+            initializeEventListeners();
+            
+            // Hide loading
+            document.getElementById('networkLoading').classList.remove('show');
+            
+            console.log('Application initialized successfully');
+        }
+
+        async function generateSampleData() {
+            try {
+                // Fetch network data from API
+                const networkResponse = await fetch('/api/data/network');
+                const networkData = await networkResponse.json();
+                
+                // Fetch metrics data from API
+                const metricsResponse = await fetch('/api/data/metrics');
+                const metricsData = await metricsResponse.json();
+                
+                supplyChainData = {
+                    locations: networkData.locations,
+                    connections: networkData.connections,
+                    metrics: metricsData
+                };
+                
+                console.log('Loaded real supply chain data from API');
+            } catch (error) {
+                console.error('Failed to load data from API, using fallback data:', error);
+                // Fallback to sample data if API is not available
+                supplyChainData = {
+                    locations: [
+                        { id: 'dc1', name: 'Bentonville DC', type: 'distribution_center', lat: 36.3729, lon: -94.2088, capacity: 50000, utilization: 0.75 },
+                        { id: 'dc2', name: 'Dallas DC', type: 'distribution_center', lat: 32.7767, lon: -96.7970, capacity: 45000, utilization: 0.82 },
+                        { id: 'wh1', name: 'Memphis Warehouse', type: 'warehouse', lat: 35.1495, lon: -90.0490, capacity: 25000, utilization: 0.68 },
+                        { id: 'wh2', name: 'Phoenix Warehouse', type: 'warehouse', lat: 33.4484, lon: -112.0740, capacity: 30000, utilization: 0.71 },
+                        { id: 'f1', name: 'Arkansas Food Processing', type: 'factory', lat: 36.1867, lon: -94.1288, capacity: 15000, utilization: 0.89 },
+                        { id: 'f2', name: 'Texas Electronics Factory', type: 'factory', lat: 30.2672, lon: -97.7431, capacity: 20000, utilization: 0.76 },
+                        { id: 's1', name: 'Walmart Supercenter #1', type: 'retail_store', lat: 36.3320, lon: -94.1185, capacity: 2500, utilization: 0.65 },
+                        { id: 's2', name: 'Walmart Supercenter #2', type: 'retail_store', lat: 33.0198, lon: -96.6989, capacity: 2800, utilization: 0.73 },
+                        { id: 's3', name: 'Walmart Supercenter #3', type: 'retail_store', lat: 33.9526, lon: -84.5499, capacity: 2600, utilization: 0.69 },
+                        { id: 'p1', name: 'Port of Long Beach', type: 'port', lat: 33.7701, lon: -118.1937, capacity: 80000, utilization: 0.58 }
+                    ],
+                    connections: [
+                        { source: 'p1', target: 'dc2', flow: 1200 },
+                        { source: 'f1', target: 'dc1', flow: 800 },
+                        { source: 'f2', target: 'dc2', flow: 950 },
+                        { source: 'dc1', target: 'wh1', flow: 600 },
+                        { source: 'dc2', target: 'wh2', flow: 700 },
+                        { source: 'dc1', target: 's1', flow: 300 },
+                        { source: 'dc2', target: 's2', flow: 350 },
+                        { source: 'wh1', target: 's3', flow: 280 }
+                    ],
+                    metrics: {
+                        totalLocations: 10,
+                        totalOrders: 1247,
+                        completedOrders: 1089,
+                        activeShipments: 156,
+                        avgUtilization: 0.72,
+                        onTimeDelivery: 0.94
+                    }
+                };
+            }
+        }
+
+        function initializeNetworkVisualization() {
+            const container = document.getElementById('networkViz');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            // Clear existing content
+            container.innerHTML = '';
+
+            // Create SVG
+            networkSvg = d3.select('#networkViz')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Add zoom behavior
+            const zoom = d3.zoom()
+                .scaleExtent([0.5, 3])
+                .on('zoom', (event) => {
+                    networkSvg.select('g').attr('transform', event.transform);
+                });
+
+            networkSvg.call(zoom);
+
+            const g = networkSvg.append('g');
+
+            // Create force simulation
+            const simulation = d3.forceSimulation(supplyChainData.locations)
+                .force('link', d3.forceLink(supplyChainData.connections).id(d => d.id).distance(150))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(40));
+
+            // Create links
+            const links = g.append('g')
+                .selectAll('line')
+                .data(supplyChainData.connections)
+                .enter().append('line')
+                .attr('stroke', '#999')
+                .attr('stroke-opacity', 0.6)
+                .attr('stroke-width', d => Math.sqrt(d.flow / 50));
+
+            // Create nodes
+            const nodes = g.append('g')
+                .selectAll('circle')
+                .data(supplyChainData.locations)
+                .enter().append('circle')
+                .attr('r', d => Math.sqrt(d.capacity / 1000) + 10)
+                .attr('fill', d => getLocationColor(d.type))
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2)
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended));
+
+            // Add labels
+            const labels = g.append('g')
+                .selectAll('text')
+                .data(supplyChainData.locations)
+                .enter().append('text')
+                .text(d => d.name)
+                .attr('font-size', '12px')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '.35em')
+                .attr('fill', '#333');
+
+            // Add tooltips
+            nodes.append('title')
+                .text(d => `${d.name}\nType: ${d.type}\nCapacity: ${d.capacity.toLocaleString()}\nUtilization: ${(d.utilization * 100).toFixed(1)}%`);
+
+            // Update positions on simulation tick
+            simulation.on('tick', () => {
+                links
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                nodes
+                    .attr('cx', d => d.x)
+                    .attr('cy', d => d.y);
+
+                labels
+                    .attr('x', d => d.x)
+                    .attr('y', d => d.y + 25);
+            });
+
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+        }
+
+        function getLocationColor(type) {
+            const colors = {
+                'retail_store': '#ff6b6b',
+                'distribution_center': '#4ecdc4',
+                'warehouse': '#45b7d1',
+                'factory': '#f9ca24',
+                'port': '#6c5ce7'
+            };
+            return colors[type] || '#95a5a6';
+        }
+
+        function initializeMetrics() {
+            const metricsGrid = document.getElementById('metricsGrid');
+            const metrics = supplyChainData.metrics;
+
+            metricsGrid.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-value">${metrics.totalLocations}</div>
+                    <div class="metric-label">Total Locations</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${metrics.totalOrders.toLocaleString()}</div>
+                    <div class="metric-label">Total Orders</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${(metrics.completedOrders / metrics.totalOrders * 100).toFixed(1)}%</div>
+                    <div class="metric-label">Order Completion</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${metrics.activeShipments}</div>
+                    <div class="metric-label">Active Shipments</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${(metrics.avgUtilization * 100).toFixed(1)}%</div>
+                    <div class="metric-label">Avg Utilization</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">${(metrics.onTimeDelivery * 100).toFixed(1)}%</div>
+                    <div class="metric-label">On-Time Delivery</div>
+                </div>
+            `;
+
+            // Initialize performance chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Order Fulfillment Rate',
+                        data: [92, 94, 91, 95, 93, 94],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Inventory Turnover',
+                        data: [88, 89, 92, 90, 91, 93],
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeEventListeners() {
+            // Agent selector
+            document.querySelectorAll('.agent-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.agent-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentAgent = e.target.dataset.agent;
+                });
+            });
+
+            // Chat input
+            document.getElementById('chatInput').addEventListener('keypress', handleKeyPress);
+        }
+
+        function showView(view) {
+            currentView = view;
+            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update visualization based on view
+            if (view === 'inventory') {
+                showInventoryHeatmap();
+            } else if (view === 'flow') {
+                showFlowAnalysis();
+            } else {
+                initializeNetworkVisualization();
+            }
+        }
+
+        function showInventoryHeatmap() {
+            // Update nodes to show inventory levels as heatmap
+            networkSvg.selectAll('circle')
+                .transition()
+                .duration(500)
+                .attr('fill', d => {
+                    const utilization = d.utilization;
+                    if (utilization > 0.8) return '#ff6b6b';
+                    if (utilization > 0.6) return '#ffd93d';
+                    return '#6bcf7f';
+                });
+        }
+
+        function showFlowAnalysis() {
+            // Highlight flow connections
+            networkSvg.selectAll('line')
+                .transition()
+                .duration(500)
+                .attr('stroke', '#667eea')
+                .attr('stroke-width', d => Math.sqrt(d.flow / 30))
+                .attr('stroke-opacity', 0.8);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show loading
+            const loadingMessage = addMessage('Processing your query...', 'agent', currentAgent, true);
+
+            try {
+                // Simulate API call to agent
+                const response = await processQuery(message, currentAgent);
+                
+                // Remove loading message
+                loadingMessage.remove();
+                
+                // Add agent response
+                addMessage(response.answer, 'agent', currentAgent);
+                
+                // Show thinking process
+                showThinkingProcess(response.thoughts, response.confidence, response.execution_time_ms);
+                
+            } catch (error) {
+                loadingMessage.remove();
+                addMessage('Sorry, I encountered an error processing your query. Please try again.', 'agent', currentAgent);
+            }
+        }
+
+        function addMessage(text, type, agentType = null, isLoading = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            if (isLoading) {
+                messageDiv.classList.add('loading');
+            }
+
+            let content = '';
+            if (type === 'agent' && agentType) {
+                const agentNames = {
+                    'simple_reflex': 'Simple Reflex Agent',
+                    'model_based_reflex': 'Model-Based Reflex Agent',
+                    'goal_based': 'Goal-Based Agent'
+                };
+                content += `<div class="agent-type">${agentNames[agentType]}</div>`;
+            }
+            
+            content += `<div>${text}</div>`;
+            messageDiv.innerHTML = content;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        async function processQuery(query, agentType) {
+            try {
+                // Send query to backend API
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        agent_type: agentType
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                return result;
+                
+            } catch (error) {
+                console.error('API call failed, using fallback response:', error);
+                
+                // Fallback responses if API is not available
+                const responses = {
+                    inventory: {
+                        answer: "Found 156 inventory records across 8 locations. Walmart Supercenter #1 has 2,847 items with 89% availability. Key items: Great Value Milk (450 units), Equate Pain Reliever (234 units), Mainstays Towels (167 units). Current utilization: 65%.",
+                        thoughts: [
+                            { step: 1, thought: "Parsing user query for inventory information", action: "Identified intent: inventory_query", observation: "User asking about specific store inventory", confidence: 0.9 },
+                            { step: 2, thought: "Searching inventory database for Walmart Supercenter #1", action: "Retrieved inventory records", observation: "Found 156 matching inventory items", confidence: 0.95 },
+                            { step: 3, thought: "Calculating availability and utilization metrics", action: "Analyzed stock levels and capacity", observation: "High availability with moderate utilization", confidence: 0.87 }
+                        ],
+                        confidence: 0.91,
+                        execution_time_ms: 1247
+                    },
+                    performance: {
+                        answer: "Supply Chain Health Status: GOOD (Overall Score: 78.4%). Average utilization: 72.1%, Order fulfillment: 87.3%, On-time delivery: 94.2%. 📈 Locations with increasing utilization: Dallas DC, Phoenix Warehouse.",
+                        thoughts: [
+                            { step: 1, thought: "Analyzing performance query requirements", action: "Identified intent: performance_query", observation: "User requesting network performance metrics", confidence: 0.88 },
+                            { step: 2, thought: "Gathering performance data from all locations", action: "Retrieved utilization and delivery metrics", observation: "Performance data collected from 10 locations", confidence: 0.92 },
+                            { step: 3, thought: "Calculating composite health score", action: "Weighted average of key performance indicators", observation: "Overall health score: 78.4% - Good performance", confidence: 0.85 }
+                        ],
+                        confidence: 0.88,
+                        execution_time_ms: 1856
+                    },
+                    default: {
+                        answer: "I can help you with inventory levels, location information, order status, supplier details, capacity utilization, employee information, and performance metrics. Try asking about specific stores, products, or operational metrics.",
+                        thoughts: [
+                            { step: 1, thought: "Query intent unclear, providing general guidance", action: "Classified as general_query", observation: "No specific entities or intents identified", confidence: 0.6 },
+                            { step: 2, thought: "Generating helpful response with available capabilities", action: "Listed available query types", observation: "Provided comprehensive capability overview", confidence: 0.8 }
+                        ],
+                        confidence: 0.7,
+                        execution_time_ms: 456
+                    }
+                };
+
+                // Determine response type based on query content
+                const queryLower = query.toLowerCase();
+                if (queryLower.includes('inventory') || queryLower.includes('items') || queryLower.includes('stock')) {
+                    return responses.inventory;
+                } else if (queryLower.includes('performance') || queryLower.includes('utilization') || queryLower.includes('efficiency')) {
+                    return responses.performance;
+                } else {
+                    return responses.default;
+                }
+            }
+        }
+
+        function showThinkingProcess(thoughts, confidence, executionTime) {
+            const thinkingViz = document.getElementById('thinkingViz');
+            
+            let content = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0.5rem; background: white; border-radius: 6px;">
+                    <span><strong>Overall Confidence:</strong> ${(confidence * 100).toFixed(1)}%</span>
+                    <span><strong>Execution Time:</strong> ${executionTime.toFixed(0)}ms</span>
+                </div>
+            `;
+            
+            thoughts.forEach(thought => {
+                content += `
+                    <div class="thinking-step">
+                        <div class="step-header">Step ${thought.step}: ${thought.thought}</div>
+                        <div class="step-content">
+                            <strong>Action:</strong> ${thought.action}<br>
+                            <strong>Observation:</strong> ${thought.observation}
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${thought.confidence * 100}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            thinkingViz.innerHTML = content;
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (networkSvg) {
+                const container = document.getElementById('networkViz');
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                networkSvg.attr('width', width).attr('height', height);
+            }
+        });
+    </script>
+</body>
+</html>
