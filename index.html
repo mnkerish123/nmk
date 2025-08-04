@@ -2,93 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Supply Chain Ontology Layer - Step 1</title>
+  <title>Supply Chain Dashboard</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f9f9f9;
-    }
-    h1 {
-      color: #2d4f8e;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      background-color: #fff;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      text-align: left;
-      padding: 8px;
-    }
-    th {
-      background-color: #eef1f7;
-    }
-    tr:nth-child(even) {
-      background-color: #f4f4f4;
-    }
+    table { border-collapse: collapse; margin-bottom: 2em; }
+    th, td { border: 1px solid #ccc; padding: 0.5em; }
+    th { background: #f0f0f0; }
   </style>
 </head>
 <body>
-  <h1>Supply Chain Ontology Layer — Step 1</h1>
-  <table>
-    <tr>
-      <th>Core Concept</th>
-      <th>Definition</th>
-      <th>Key Attributes</th>
-      <th>Potential Relationships</th>
-      <th>Discussion Focus</th>
-    </tr>
-    <tr>
-      <td>Product</td>
-      <td>Item being manufactured, stored, shipped, or sold</td>
-      <td>SKU, Category, Dimensions, Weight</td>
-      <td>Manufactured by, Stored at, Shipped in</td>
-      <td>Granularity, categorization, standard codes</td>
-    </tr>
-    <tr>
-      <td>Supplier</td>
-      <td>Entity that provides raw materials or products</td>
-      <td>Name, Location, Compliance Status</td>
-      <td>Supplies, Has Contract With</td>
-      <td>Supplier tiers, audit trails</td>
-    </tr>
-    <tr>
-      <td>Manufacturer</td>
-      <td>Entity transforming raw materials into finished goods</td>
-      <td>Facility ID, Production Capacity, Processes</td>
-      <td>Manufactures, Has Quality Certification</td>
-      <td>Production constraints, process standards</td>
-    </tr>
-    <tr>
-      <td>Warehouse</td>
-      <td>Facility where goods are stored</td>
-      <td>Location, Capacity, Temperature Control</td>
-      <td>Stores, Receives from, Ships to</td>
-      <td>Strategic placement, cold-chain requirements</td>
-    </tr>
-    <tr>
-      <td>Distributor</td>
-      <td>Entity that moves products across nodes</td>
-      <td>Region, Transportation Mode</td>
-      <td>Delivers to, Receives from</td>
-      <td>Delivery lead times, regional coverage</td>
-    </tr>
-    <tr>
-      <td>Shipment</td>
-      <td>Movement of goods from one location to another</td>
-      <td>Shipment ID, Carrier, ETA</td>
-      <td>Includes Product, Originates at, Destined to</td>
-      <td>Tracking, multi-modal integration</td>
-    </tr>
-    <tr>
-      <td>Customer</td>
-      <td>End recipient or business customer</td>
-      <td>ID, Demand Pattern, Location</td>
-      <td>Buys, Returns, Requests</td>
-      <td>Segmentation, demand forecasting</td>
-    </tr>
-  </table>
+  <h1>Supply Chain Dashboard</h1>
+  <div id="dashboard"></div>
+  
+  <script>
+    // Sample JSON data (you can also fetch this from an API or file)
+    const data = {
+      "Products": [
+        {"sku": "MILK1", "name": "Milk", "weight": 1.0, "volume": 1.0, "cost": 2.5, "safetyStockLevel": 50, "leadTime": 2},
+        {"sku": "BREAD1", "name": "Bread", "weight": 0.5, "volume": 0.3, "cost": 1.2, "safetyStockLevel": 30, "leadTime": 1},
+        {"sku": "EGG1", "name": "Eggs", "weight": 0.7, "volume": 0.2, "cost": 2.0, "safetyStockLevel": 20, "leadTime": 1}
+      ],
+      "Locations": [
+        {"locationID": "WH1", "type": "Warehouse", "name": "Dallas Distribution Center", "capacity": 10000, "address": "123 DC Way, Dallas, TX", "operationalHours": "24/7", "temperatureZone": "Cool"},
+        {"locationID": "STORE1", "type": "Retail Store", "name": "Walmart Supercenter #123", "capacity": 2000, "address": "456 Main St, Dallas, TX", "operationalHours": "8-22", "temperatureZone": "Ambient"}
+      ],
+      "Inventory": [
+        {"sku": "MILK1", "locationID": "WH1", "quantity": 500},
+        {"sku": "BREAD1", "locationID": "WH1", "quantity": 300},
+        {"sku": "EGG1", "locationID": "WH1", "quantity": 200},
+        {"sku": "MILK1", "locationID": "STORE1", "quantity": 120},
+        {"sku": "BREAD1", "locationID": "STORE1", "quantity": 50},
+        {"sku": "EGG1", "locationID": "STORE1", "quantity": 30}
+      ]
+    };
+
+    function renderTable(title, items) {
+      if (!items || items.length === 0) return '';
+      const headers = Object.keys(items[0]);
+      let html = `<h2>${title}</h2><table><thead><tr>`;
+      headers.forEach(h => html += `<th>${h}</th>`);
+      html += '</tr></thead><tbody>';
+      items.forEach(row => {
+        html += '<tr>';
+        headers.forEach(h => html += `<td>${row[h]}</td>`);
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    const dashboard = document.getElementById('dashboard');
+    dashboard.innerHTML =
+      renderTable('Products', data.Products) +
+      renderTable('Locations', data.Locations) +
+      renderTable('Inventory', data.Inventory);
+
+  </script>
 </body>
 </html>
